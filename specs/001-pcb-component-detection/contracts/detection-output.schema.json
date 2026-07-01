@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://electrack/contracts/detection-output.schema.json",
+  "title": "PCB Detection Output",
+  "description": "Modelin tek bir kare için döndürdüğü tespit listesi. Kutular normalize [0-1] eksen-hizalı köşe (xyxy) biçimindedir. Liste, model-içi güven eşiği + NMS sonrası yalnızca kesinleşmiş tespitleri içerir (FR-002, FR-002a).",
+  "type": "object",
+  "required": ["detections"],
+  "additionalProperties": false,
+  "properties": {
+    "image_width": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Orijinal girdi karesinin piksel genişliği (normalize kutuları piksele çevirmek için opsiyonel referans)."
+    },
+    "image_height": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Orijinal girdi karesinin piksel yüksekliği."
+    },
+    "detections": {
+      "type": "array",
+      "description": "0 veya daha fazla tespit. Boş yüzey/komponentsiz girdide boş olabilir (FR-007).",
+      "items": { "$ref": "#/$defs/detection" }
+    }
+  },
+  "$defs": {
+    "detection": {
+      "type": "object",
+      "required": ["bbox", "class_name", "class_id", "confidence"],
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "type": "array",
+          "description": "Normalize [0-1], eksen-hizalı, köşe biçimi [x_min, y_min, x_max, y_max]. x_min < x_max, y_min < y_max.",
+          "items": { "type": "number", "minimum": 0, "maximum": 1 },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "class_name": {
+          "type": "string",
+          "description": "6 MVP sınıf adından biri veya 'unknown'.",
+          "enum": [
+            "ic",
+            "electrolytic_capacitor",
+            "connector_header",
+            "led",
+            "through_hole_resistor",
+            "to92_transistor",
+            "unknown"
+          ]
+        },
+        "class_id": {
+          "type": ["integer", "null"],
+          "description": "Kararlı sınıf indeksi (0..5). 'unknown' için null.",
+          "minimum": 0
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Güven değeri [0,1]. Model-içi tespit eşiğinin üzerinde.",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "image_width": 1920,
+      "image_height": 1080,
+      "detections": [
+        { "bbox": [0.12, 0.34, 0.21, 0.48], "class_name": "ic", "class_id": 0, "confidence": 0.91 },
+        { "bbox": [0.55, 0.60, 0.62, 0.79], "class_name": "electrolytic_capacitor", "class_id": 1, "confidence": 0.84 },
+        { "bbox": [0.70, 0.10, 0.77, 0.18], "class_name": "unknown", "class_id": null, "confidence": 0.41 }
+      ]
+    },
+    { "image_width": 1280, "image_height": 720, "detections": [] }
+  ]
+}

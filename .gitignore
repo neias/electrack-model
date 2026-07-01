@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+
+# Veri / model / rapor artefaktları (kod dışında sürümlenir — bkz. manifest)
+datasets/raw/
+datasets/yolo/images/
+datasets/yolo/labels/
+datasets/acceptance/images/
+datasets/acceptance/labels/
+models/weights/
+models/export/
+reports/*.json
+reports/*.csv
+
+# İzlenen istisnalar (yapı/şablon dosyaları git'te kalır)
+!datasets/yolo/data.yaml
+!datasets/**/DATASET_CARD.md
+!datasets/raw/samples/README.md
+
+# Universal
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/
+.env
+.env.*

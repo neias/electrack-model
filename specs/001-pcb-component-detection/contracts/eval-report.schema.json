@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://electrack/contracts/eval-report.schema.json",
+  "title": "Evaluation / Acceptance Report",
+  "description": "Sabit kabul kümesi üzerinde ölçülen kabul raporu (FR-011, FR-013, SC-001..SC-004). Kabul eşikleri: overall_recall >= 0.80, false_positive_rate < 0.10, latency FPS >= 15.",
+  "type": "object",
+  "required": ["model_id", "dataset_id", "iou_threshold", "overall_recall", "false_positive_rate", "per_class", "latency", "verdict"],
+  "additionalProperties": false,
+  "properties": {
+    "model_id": { "type": "string", "description": "Değerlendirilen artefakt sürüm/hash (ör. .mlpackage)." },
+    "dataset_id": { "type": "string", "description": "Kabul kümesi sürüm tanımlayıcısı (dondurulmuş)." },
+    "iou_threshold": { "type": "number", "const": 0.5, "description": "Eşleştirme IoU eşiği (sabit 0.5)." },
+    "det_threshold": { "type": "number", "minimum": 0, "maximum": 1, "description": "Genel tespit güven eşiği (FP bastırma)." },
+    "class_threshold": { "type": "number", "minimum": 0, "maximum": 1, "description": "Sınıf kesinlik eşiği; altında 'unknown' üretilir." },
+    "overall_recall": {
+      "type": "number", "minimum": 0, "maximum": 1,
+      "description": "Mikro-ortalama recall @ IoU 0.5, tüm görünür komponentler. Kabul: >= 0.80."
+    },
+    "false_positive_rate": {
+      "type": "number", "minimum": 0, "maximum": 1,
+      "description": "Yanlış-pozitif / toplam üretilen tespit. Kabul: < 0.10."
+    },
+    "per_class": {
+      "type": "object",
+      "description": "Sınıf adı -> metrikler.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["recall", "precision", "support"],
+        "additionalProperties": false,
+        "properties": {
+          "recall": { "type": "number", "minimum": 0, "maximum": 1 },
+          "precision": { "type": "number", "minimum": 0, "maximum": 1 },
+          "support": { "type": "integer", "minimum": 0, "description": "Ground-truth örnek sayısı." }
+        }
+      }
+    },
+    "unknown_behavior": {
+      "type": "object",
+      "description": "Belirsiz/eğitilmemiş örneklerde davranış (SC-004).",
+      "additionalProperties": false,
+      "properties": {
+        "high_conf_misclassifications": { "type": "integer", "minimum": 0, "description": "Belirsiz örneklerde yüksek-güvenli yanlış sınıflandırma sayısı (hedef: düşük/0)." },
+        "unknown_recall": { "type": "number", "minimum": 0, "maximum": 1, "description": "Belirsiz nesnelerin 'unknown' olarak yakalanma oranı." }
+      }
+    },
+    "latency": {
+      "type": "object",
+      "required": ["fps", "ms_per_frame", "objects_per_frame", "hardware"],
+      "additionalProperties": false,
+      "description": "Hedef donanımda uçtan-uca çıkarım (ön-işleme + inference + NMS). SC-003.",
+      "properties": {
+        "fps": { "type": "number", "minimum": 0, "description": "Kare/saniye. Kabul: >= 15." },
+        "ms_per_frame": { "type": "number", "minimum": 0 },
+        "objects_per_frame": { "type": "integer", "minimum": 0, "description": "Ölçüm senaryosundaki komponent sayısı (~50)." },
+        "hardware": { "type": "string", "description": "Ör. 'Apple M4 Mac Mini'." }
+      }
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["PASS", "FAIL"],
+      "description": "Tüm kabul eşikleri karşılanırsa PASS."
+    }
+  }
+}

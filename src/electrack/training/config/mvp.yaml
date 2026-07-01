@@ -1,0 +1,23 @@
+# MVP eğitim konfigürasyonu (research.md R1/R6).
+# Sınıf listesi BURADA DEĞİL — yalnızca data.yaml'dan gelir (FR-009/US3).
+data_yaml: datasets/yolo/data.yaml
+model: yolo11n.pt        # nano ile başla; doğruluk yetersizse yolo11s.pt
+epochs: 100
+imgsz: 640
+batch: 16
+seed: 1337
+project: models/weights
+name: mvp
+
+# Zorlu koşullara dayanıklılık için augmentasyon (FR-008):
+# ışık/yansıma → hsv/brightness; ölçek → scale; kalabalık/kapanma → mosaic.
+augment:
+  hsv_h: 0.015
+  hsv_s: 0.7
+  hsv_v: 0.4        # parlaklık varyasyonu (zayıf/aşırı ışık)
+  degrees: 5.0
+  translate: 0.1
+  scale: 0.5        # ölçek uçları (çok yakın/uzak kart)
+  fliplr: 0.5
+  mosaic: 1.0       # kalabalık/kısmi kapanma
+  mixup: 0.1

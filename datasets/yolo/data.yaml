@@ -1,0 +1,15 @@
+# YOLO veri kümesi konfigürasyonu — TÜR KÜMESİ GENİŞLETME NOKTASI (FR-009).
+# Yeni bir sınıf eklemek için: sona yeni id ekle, veriyi koy, yeniden eğit.
+# Mevcut id'ler ASLA değişmez/yeniden kullanılmaz.
+path: .
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: ic
+  1: electrolytic_capacitor
+  2: connector_header
+  3: led
+  4: through_hole_resistor
+  5: to92_transistor
