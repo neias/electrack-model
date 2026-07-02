@@ -12,12 +12,12 @@ Bu belge, tutarlı ground-truth üretmek için etiketleme kurallarını tanımla
 
 | id | name | Kapsam / ipuçları |
 |----|------|-------------------|
-| 0 | `ic` | Entegre/IC gövdeleri (DIP, çok bacaklı kare/dikdörtgen paketler). |
-| 1 | `electrolytic_capacitor` | Silindirik elektrolitik kondansatör (kutup bandı görünür). |
-| 2 | `connector_header` | Konnektör/header sıraları, pin başlıkları, soketler. |
+| 0 | `ic` | Entegre/IC gövdeleri (DIP/SMD, çok bacaklı kare/dikdörtgen paketler). |
+| 1 | `capacitor` | Kondansatör (elektrolitik, seramik, tantal — tüm türler). |
+| 2 | `connector` | Konnektör/header sıraları, pin başlıkları, soketler. |
 | 3 | `led` | LED (kubbe/renkli gövde). |
-| 4 | `through_hole_resistor` | Delikli (through-hole) direnç (renk bantlı, eksenli). |
-| 5 | `to92_transistor` | TO-92 paket transistör (yarım-daire plastik gövde, 3 bacak). |
+| 4 | `resistor` | Direnç (delikli veya SMD — tüm türler). |
+| 5 | `transistor` | Transistör (TO-92, SOT-23 vb. — tüm paketler). |
 
 > Sınıf kümesi `datasets/yolo/data.yaml`'dan yönetilir. Yeni tür (ör. SMD) eklerken bu tabloyu ve `data.yaml`'ı birlikte güncelleyin (bkz. `docs/adding-a-class.md`).
 

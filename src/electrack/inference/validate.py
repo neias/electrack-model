@@ -13,11 +13,11 @@ CONTRACT_PATH = Path("specs/001-pcb-component-detection/contracts/detection-outp
 
 VALID_LABELS = {
     "ic",
-    "electrolytic_capacitor",
-    "connector_header",
+    "capacitor",
+    "connector",
     "led",
-    "through_hole_resistor",
-    "to92_transistor",
+    "resistor",
+    "transistor",
     "unknown",
 }
 

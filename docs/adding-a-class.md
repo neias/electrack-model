@@ -9,12 +9,12 @@ Tür kümesi **veri-odaklıdır**: yeni bir sınıf eklemek hat/mimari kod deği
    ```yaml
    names:
      0: ic
-     1: electrolytic_capacitor
-     2: connector_header
+     1: capacitor
+     2: connector
      3: led
-     4: through_hole_resistor
-     5: to92_transistor
-     6: smd_resistor        # <-- yeni
+     4: resistor
+     5: transistor
+     6: diode               # <-- yeni
    ```
 
    İsteğe bağlı: `src/electrack/data/classes.py` içindeki `DISPLAY_NAMES`'e insan-okur ad ekleyin (zorunlu değil; tespit sözleşmesini etkilemez).

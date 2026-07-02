@@ -124,10 +124,12 @@ class Detector:
         model_path: Path,
         registry: ClassRegistry | None = None,
         thresholds: ThresholdConfig | None = None,
+        imgsz: int | None = None,
     ):
         self.model_path = Path(model_path)
         self.registry = registry or ClassRegistry.from_data_yaml()
         self.thresholds = thresholds or ThresholdConfig()
+        self.imgsz = imgsz  # None → model varsayılanı; eğitim çözünürlüğüyle eşleştir
         self._model = None
 
     def _load(self):
@@ -144,7 +146,12 @@ class Detector:
     def predict_path(self, image_path: Path) -> dict:
         """Bir görüntü dosyasında çıkarım yapıp sözleşme çıktısını döndür."""
         model = self._load()
-        results = model.predict(str(image_path), verbose=False)
+        # det_threshold'u modele geçir: model-içi eşik ile sözleşme eşiği hizalansın
+        # (aksi halde ultralytics varsayılanı ~0.25 aday öncesi filtreler — FR-007).
+        predict_kwargs = {"conf": self.thresholds.det_threshold, "verbose": False}
+        if self.imgsz is not None:
+            predict_kwargs["imgsz"] = self.imgsz  # eğitim çözünürlüğüyle eşleştir
+        results = model.predict(str(image_path), **predict_kwargs)
         res = results[0]
         orig_h, orig_w = res.orig_shape  # (h, w)
         raw: list[tuple[tuple[float, float, float, float], int, float]] = []

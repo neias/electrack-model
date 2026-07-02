@@ -1,15 +1,21 @@
 # YOLO veri kümesi konfigürasyonu — TÜR KÜMESİ GENİŞLETME NOKTASI (FR-009).
 # Yeni bir sınıf eklemek için: sona yeni id ekle, veriyi koy, yeniden eğit.
 # Mevcut id'ler ASLA değişmez/yeniden kullanılmaz.
-path: .
+#
+# NOT: Sınıf adları GENEL komponent türleridir (capacitor/resistor/transistor).
+# Kamera karesinden elektrolitik/seramik ya da delikli/SMD alt-türü ayırt
+# edilemediğinden, taksonomi mevcut açık veri kümeleriyle (bkz. convert.py
+# CLASS_MAPPINGS) hizalıdır.
+# `path` proje kökünden çözülür (ultralytics); prepare-data bu alanı kullanmaz.
+path: datasets/yolo
 train: images/train
 val: images/val
 test: images/test
 
 names:
   0: ic
-  1: electrolytic_capacitor
-  2: connector_header
+  1: capacitor
+  2: connector
   3: led
-  4: through_hole_resistor
-  5: to92_transistor
+  4: resistor
+  5: transistor

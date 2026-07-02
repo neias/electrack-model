@@ -3,8 +3,8 @@
 data_yaml: datasets/yolo/data.yaml
 model: yolo11n.pt        # nano ile başla; doğruluk yetersizse yolo11s.pt
 epochs: 100
-imgsz: 640
-batch: 16
+imgsz: 960               # küçük komponentler için yüksek çözünürlük (recall↑)
+batch: 4                 # 16GB MPS: 960/batch8 ~13GB OOM ile öldü → 4 (~6-7GB güvenli)
 seed: 1337
 project: models/weights
 name: mvp

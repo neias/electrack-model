@@ -15,7 +15,7 @@ Spec Kit belgeleri: [`specs/001-pcb-component-detection/`](specs/001-pcb-compone
 
 ### Sınıflar (MVP)
 
-`ic`, `electrolytic_capacitor`, `connector_header`, `led`, `through_hole_resistor`, `to92_transistor` + türetilen `unknown`. Tür kümesi `datasets/yolo/data.yaml`'dan genişletilir — bkz. [docs/adding-a-class.md](docs/adding-a-class.md).
+`ic`, `capacitor`, `connector`, `led`, `resistor`, `transistor` + türetilen `unknown`. Sınıflar genel komponent türleridir (kamera karesinden alt-tür ayırt edilemez). Tür kümesi `datasets/yolo/data.yaml`'dan genişletilir — bkz. [docs/adding-a-class.md](docs/adding-a-class.md).
 
 ### Kurulum
 
@@ -79,7 +79,7 @@ Spec Kit documents: [`specs/001-pcb-component-detection/`](specs/001-pcb-compone
 
 ### Classes (MVP)
 
-`ic`, `electrolytic_capacitor`, `connector_header`, `led`, `through_hole_resistor`, `to92_transistor` + a derived `unknown`. The class set is extended from `datasets/yolo/data.yaml` — see [docs/adding-a-class.md](docs/adding-a-class.md).
+`ic`, `capacitor`, `connector`, `led`, `resistor`, `transistor` + a derived `unknown`. Classes are generic component types (sub-types can't be told apart from a camera frame). The class set is extended from `datasets/yolo/data.yaml` — see [docs/adding-a-class.md](docs/adding-a-class.md).
 
 ### Setup
 

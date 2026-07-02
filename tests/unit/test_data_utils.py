@@ -15,7 +15,7 @@ def test_registry_loads_six_mvp_classes():
     reg = ClassRegistry.from_data_yaml(Path("datasets/yolo/data.yaml"))
     assert reg.num_classes == 6
     assert reg.name(0) == "ic"
-    assert reg.id_of("to92_transistor") == 5
+    assert reg.id_of("transistor") == 5
 
 
 def test_registry_rejects_noncontiguous_ids():

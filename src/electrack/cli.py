@@ -53,7 +53,14 @@ def _cmd_prepare_data(args) -> int:
 def _cmd_train(args) -> int:
     from electrack.training.train import train
 
-    best = train(Path(args.config), epochs=args.epochs)
+    best = train(
+        Path(args.config),
+        epochs=args.epochs,
+        device=args.device,
+        model=args.model,
+        batch=args.batch,
+        imgsz=args.imgsz,
+    )
     print(str(best))
     return 0
 
@@ -61,7 +68,7 @@ def _cmd_train(args) -> int:
 def _cmd_export(args) -> int:
     from electrack.export.to_coreml import export_coreml
 
-    out = export_coreml(Path(args.weights), det_threshold=args.det_threshold)
+    out = export_coreml(Path(args.weights), det_threshold=args.det_threshold, imgsz=args.imgsz)
     print(str(out))
     return 0
 
@@ -71,7 +78,7 @@ def _cmd_infer(args) -> int:
     from electrack.inference.detector import Detector
 
     thr = ThresholdConfig(det_threshold=args.det_threshold, class_threshold=args.class_threshold)
-    det = Detector(Path(args.model), thresholds=thr)
+    det = Detector(Path(args.model), thresholds=thr, imgsz=args.imgsz)
     out = det.predict_path(Path(args.image))
     text = json.dumps(out, indent=2, ensure_ascii=False)
     if args.json:
@@ -95,18 +102,46 @@ def _cmd_validate_output(args) -> int:
 
 
 def _cmd_evaluate(args) -> int:
-    # Değerlendirme, çıkarım (Detector) gerektirir; ağır bağımlılık lazy.
+    from electrack.config import ThresholdConfig
+    from electrack.data.classes import ClassRegistry
+    from electrack.eval.acceptance import write_report
+    from electrack.eval.harness import run_evaluation
+
+    registry = ClassRegistry.from_data_yaml(Path(args.data_yaml))
+    thr = ThresholdConfig(det_threshold=args.det_threshold, class_threshold=args.class_threshold)
     log.info(
-        "Değerlendirme: model=%s dataset=%s (gerçek çalıştırma için model + "
-        "bağımlılıklar gereklidir).",
+        "Değerlendirme: model=%s dataset=%s split=%s",
         args.model,
         args.dataset,
+        args.split or "(flat)",
     )
+    report = run_evaluation(
+        Path(args.model),
+        Path(args.dataset),
+        registry,
+        thr,
+        split=args.split,
+        measure_latency=args.measure_latency,
+        imgsz=args.imgsz,
+    )
+    out_path = write_report(report)
     log.info(
-        "Ölçüm mantığı: electrack.eval.metrics + electrack.eval.acceptance. "
-        "quickstart.md Senaryo 4'e bakın."
+        "VERDICT=%s | recall=%.3f fp_rate=%.3f%s",
+        report["verdict"],
+        report["overall_recall"],
+        report["false_positive_rate"],
+        f" fps={report['latency']['fps']}" if report.get("latency") else "",
     )
-    return 0
+    for name, m in report["per_class"].items():
+        log.info(
+            "  %-14s recall=%.3f precision=%.3f support=%d",
+            name,
+            m["recall"],
+            m["precision"],
+            m["support"],
+        )
+    log.info("Rapor yazıldı: %s", out_path)
+    return 0 if report["verdict"] == "PASS" else 2
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -120,11 +155,18 @@ def build_parser() -> argparse.ArgumentParser:
     tr = sub.add_parser("train", help="Modeli eğit")
     tr.add_argument("--config", default="src/electrack/training/config/mvp.yaml")
     tr.add_argument("--epochs", type=int, default=None)
+    tr.add_argument(
+        "--model", default=None, help="başlangıç ağırlığı (ör. sıcak başlangıç last.pt)"
+    )
+    tr.add_argument("--batch", type=int, default=None, help="config'i geçersiz kıl (bellek ayarı)")
+    tr.add_argument("--imgsz", type=int, default=None)
+    tr.add_argument("--device", default=None, help="mps | cpu | 0 (varsayılan: otomatik)")
     tr.set_defaults(func=_cmd_train)
 
     ex = sub.add_parser("export", help="Core ML'e aktar")
     ex.add_argument("--weights", required=True)
     ex.add_argument("--det-threshold", type=float, default=0.25)
+    ex.add_argument("--imgsz", type=int, default=640, help="girdi boyutu (eğitimle eşleştir)")
     ex.set_defaults(func=_cmd_export)
 
     inf = sub.add_parser("infer", help="Bir görüntüde çıkarım")
@@ -133,6 +175,9 @@ def build_parser() -> argparse.ArgumentParser:
     inf.add_argument("--json", default=None)
     inf.add_argument("--det-threshold", type=float, default=0.25)
     inf.add_argument("--class-threshold", type=float, default=0.50)
+    inf.add_argument(
+        "--imgsz", type=int, default=None, help="CoreML sabit girdi boyutuyla eşleştir"
+    )
     inf.set_defaults(func=_cmd_infer)
 
     vo = sub.add_parser("validate-output", help="Tespit çıktısını sözleşmeye göre doğrula")
@@ -142,6 +187,15 @@ def build_parser() -> argparse.ArgumentParser:
     ev = sub.add_parser("evaluate", help="Kabul değerlendirmesi")
     ev.add_argument("--model", required=True)
     ev.add_argument("--dataset", default="datasets/acceptance")
+    ev.add_argument(
+        "--split", default=None, help="images/<split> + labels/<split> (ör. test); yoksa düz"
+    )
+    ev.add_argument("--data-yaml", default="datasets/yolo/data.yaml")
+    ev.add_argument("--det-threshold", type=float, default=0.25)
+    ev.add_argument("--class-threshold", type=float, default=0.50)
+    ev.add_argument(
+        "--imgsz", type=int, default=None, help="çıkarım çözünürlüğü (eğitimle eşleştir)"
+    )
     ev.add_argument("--measure-latency", action="store_true")
     ev.set_defaults(func=_cmd_evaluate)
 

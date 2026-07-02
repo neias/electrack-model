@@ -41,11 +41,11 @@
           "description": "6 MVP sınıf adından biri veya 'unknown'.",
           "enum": [
             "ic",
-            "electrolytic_capacitor",
-            "connector_header",
+            "capacitor",
+            "connector",
             "led",
-            "through_hole_resistor",
-            "to92_transistor",
+            "resistor",
+            "transistor",
             "unknown"
           ]
         },
@@ -69,7 +69,7 @@
       "image_height": 1080,
       "detections": [
         { "bbox": [0.12, 0.34, 0.21, 0.48], "class_name": "ic", "class_id": 0, "confidence": 0.91 },
-        { "bbox": [0.55, 0.60, 0.62, 0.79], "class_name": "electrolytic_capacitor", "class_id": 1, "confidence": 0.84 },
+        { "bbox": [0.55, 0.60, 0.62, 0.79], "class_name": "capacitor", "class_id": 1, "confidence": 0.84 },
         { "bbox": [0.70, 0.10, 0.77, 0.18], "class_name": "unknown", "class_id": null, "confidence": 0.41 }
       ]
     },

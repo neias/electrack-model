@@ -16,11 +16,11 @@ from electrack.config_constants import UNKNOWN_LABEL
 # İnsan-okur adlar (opsiyonel; tespit sözleşmesini etkilemez). Kanonik ada göre.
 DISPLAY_NAMES: dict[str, str] = {
     "ic": "Entegre / IC",
-    "electrolytic_capacitor": "Elektrolitik Kondansatör",
-    "connector_header": "Konnektör / Header",
+    "capacitor": "Kondansatör",
+    "connector": "Konnektör",
     "led": "LED",
-    "through_hole_resistor": "Delikli Direnç",
-    "to92_transistor": "TO-92 Transistör",
+    "resistor": "Direnç",
+    "transistor": "Transistör",
 }
 
 DEFAULT_DATA_YAML = Path("datasets/yolo/data.yaml")

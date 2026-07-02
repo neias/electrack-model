@@ -8,6 +8,7 @@ sarmalayıcısında, config'ten okunan class_threshold ile uygulanır).
 
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
 
 from electrack.config_constants import DEFAULT_DET_THRESHOLD, MODEL_INPUT_SIZE
@@ -42,5 +43,9 @@ def export_coreml(
     exported_path = Path(exported)
     out_dir.mkdir(parents=True, exist_ok=True)
     target = out_dir / "electrack.mlpackage"
-    log.info("Dışa aktarıldı: %s (hedef: %s)", exported_path, target)
-    return exported_path
+    # Ultralytics çıktısını kanonik hedefe TAŞI (README/evaluate bu yolu bekler).
+    if target.exists():
+        shutil.rmtree(target) if target.is_dir() else target.unlink()
+    shutil.move(str(exported_path), str(target))
+    log.info("Dışa aktarıldı: %s → %s", exported_path, target)
+    return target

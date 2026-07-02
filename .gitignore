@@ -19,6 +19,8 @@ datasets/acceptance/images/
 datasets/acceptance/labels/
 models/weights/
 models/export/
+runs/
+/yolo11n.pt
 reports/*.json
 reports/*.csv
 

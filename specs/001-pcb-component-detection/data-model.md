@@ -17,11 +17,13 @@ Tanınabilir komponent kategorisi. Tür kümesi `data.yaml` içinden yönetilir 
 | id | name | display_name |
 |----|------|--------------|
 | 0 | `ic` | Entegre / IC |
-| 1 | `electrolytic_capacitor` | Elektrolitik Kondansatör |
-| 2 | `connector_header` | Konnektör / Header |
+| 1 | `capacitor` | Kondansatör |
+| 2 | `connector` | Konnektör |
 | 3 | `led` | LED |
-| 4 | `through_hole_resistor` | Delikli Direnç |
-| 5 | `to92_transistor` | TO-92 Transistör |
+| 4 | `resistor` | Direnç |
+| 5 | `transistor` | Transistör |
+
+> Sınıflar GENEL komponent türleridir. Kamera karesinden elektrolitik/seramik ya da delikli/SMD alt-türü güvenilir ayırt edilemediğinden ve mevcut açık veri kümeleri (bkz. `convert.py` CLASS_MAPPINGS) genel türle etiketlendiğinden, taksonomi genel tutulmuştur.
 
 **"unknown" (bilinmeyen)**: Eğitilmiş bir sınıf id'si DEĞİLDİR; çıktı sözleşmesinde ayrı bir etiket olarak yüzeylenir (bkz. Detection.class_name). Model bir nesneyi bulur ama hiçbir sınıfı güven eşiğini geçemezse `unknown` üretilir (FR-004). Karar mantığı `research.md` → "Unknown/background stratejisi"nde.
 

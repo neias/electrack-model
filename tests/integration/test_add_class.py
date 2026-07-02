@@ -15,11 +15,11 @@ val: images/val
 test: images/test
 names:
   0: ic
-  1: electrolytic_capacitor
-  2: connector_header
+  1: capacitor
+  2: connector
   3: led
-  4: through_hole_resistor
-  5: to92_transistor
+  4: resistor
+  5: transistor
 """
 
 EXTENDED_YAML = BASE_YAML + "  6: smd_resistor\n"
