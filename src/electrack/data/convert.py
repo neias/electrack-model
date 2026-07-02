@@ -83,6 +83,18 @@ CLASS_MAPPINGS: dict[str, dict[str, str | None]] = {
         "test point": None,
         "unknown unlabeled": None,
     },
+    # Roboflow Universe: labsin/pcb-sae2u (v1, CC BY 4.0). Sınıflar isimsiz numaralar;
+    # efsane kullanıcı tarafından doğrulandı. SMD ağırlıklı, ~8 kutu/görüntü, bbox.
+    "pcb_sae2u": {
+        "0": "capacitor",  # SMD kondansatör
+        "1": "resistor",  # SMD direnç
+        "2": "ic",
+        "3": None,  # diyot — kapsam dışı
+        "4": None,  # indüktör — kapsam dışı
+        "5": "capacitor",  # kutuplu (elektrolitik) kondansatör
+        "6": "led",
+        "7": "capacitor",  # tantal kondansatör
+    },
 }
 
 

@@ -60,6 +60,7 @@ def _cmd_train(args) -> int:
         model=args.model,
         batch=args.batch,
         imgsz=args.imgsz,
+        resume=args.resume,
     )
     print(str(best))
     return 0
@@ -161,6 +162,9 @@ def build_parser() -> argparse.ArgumentParser:
     tr.add_argument("--batch", type=int, default=None, help="config'i geçersiz kıl (bellek ayarı)")
     tr.add_argument("--imgsz", type=int, default=None)
     tr.add_argument("--device", default=None, help="mps | cpu | 0 (varsayılan: otomatik)")
+    tr.add_argument(
+        "--resume", action="store_true", help="--model (last.pt) yarıda kalan koşuyu sürdür"
+    )
     tr.set_defaults(func=_cmd_train)
 
     ex = sub.add_parser("export", help="Core ML'e aktar")

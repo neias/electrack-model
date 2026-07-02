@@ -38,11 +38,14 @@ def train(
     model: str | None = None,
     batch: int | None = None,
     imgsz: int | None = None,
+    resume: bool = False,
 ) -> Path:
     """Modeli eğit ve en iyi ağırlık yolunu (.pt) döndür.
 
     `model` verilirse ondan (ör. sıcak başlangıç: last.pt) başlar; `batch`/`imgsz`
     config'i geçersiz kılar (bellek/çözünürlük ayarı için).
+    `resume=True` ise `model` (last.pt) yarıda kalan koşuyu AYNI LR programıyla
+    sürdürür (MPS aralıklı çökmesine karşı — warm-start'ın aksine ağırlıkları bozmaz).
     """
     cfg = TrainConfig.from_yaml(config_path)
     if epochs is not None:
@@ -74,18 +77,23 @@ def train(
         raise RuntimeError("ultralytics kurulu değil. Eğitim için: pip install '.[train]'") from e
 
     model = YOLO(cfg.model)
-    results = model.train(
-        data=cfg.data_yaml,
-        epochs=cfg.epochs,
-        imgsz=cfg.imgsz,
-        batch=cfg.batch,
-        seed=cfg.seed,
-        project=cfg.project,
-        name=cfg.name,
-        device=dev,
-        fraction=fraction,
-        **cfg.augment,
-    )
+    if resume:
+        # Yarıda kalan koşuyu kaldığı yerden sürdür (kaydedilmiş args/LR/optimizer state).
+        log.info("RESUME: %s kontrol noktasından devam.", cfg.model)
+        results = model.train(resume=True)
+    else:
+        results = model.train(
+            data=cfg.data_yaml,
+            epochs=cfg.epochs,
+            imgsz=cfg.imgsz,
+            batch=cfg.batch,
+            seed=cfg.seed,
+            project=cfg.project,
+            name=cfg.name,
+            device=dev,
+            fraction=fraction,
+            **cfg.augment,
+        )
     best = Path(results.save_dir) / "weights" / "best.pt"
     log.info("Eğitim tamamlandı. En iyi ağırlık: %s", best)
     return best
