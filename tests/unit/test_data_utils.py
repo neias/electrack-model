@@ -37,6 +37,56 @@ def test_map_class_known_and_unknown():
     assert map_class("roboflow_pcb_components", "not_a_class") is None
 
 
+def test_map_class_fpic_reference_designators():
+    # Referans-tanımlayıcı harfleri kanonik türe eşlenir (büyük/küçük harf duyarsız).
+    assert map_class("fpic", "R") == "resistor"
+    assert map_class("fpic", "RN") == "resistor"
+    assert map_class("fpic", "C") == "capacitor"
+    assert map_class("fpic", "U") == "ic"
+    assert map_class("fpic", "J") == "connector"
+    assert map_class("fpic", "Q") == "transistor"
+    assert map_class("fpic", "LED") == "led"
+    # kapsam dışı: diyot/indüktör/jumper vb.
+    assert map_class("fpic", "D") is None
+    assert map_class("fpic", "L") is None
+    assert map_class("fpic", "JP") is None
+
+
+def _make_supervisely_bitmap(mask, origin):
+    """numpy maskeyi Supervisely `bitmap` nesnesine kodla (base64+zlib PNG)."""
+    import base64
+    import zlib
+
+    import cv2
+    import numpy as np
+
+    png = cv2.imencode(".png", (mask.astype(np.uint8) * 255))[1].tobytes()
+    return {"data": base64.b64encode(zlib.compress(png)).decode(), "origin": list(origin)}
+
+
+def test_supervisely_bitmap_to_xyxy_roundtrip():
+    import numpy as np
+
+    from electrack.data.convert import supervisely_bitmap_to_xyxy
+
+    # 10x10 maske; içinde (2..5, 3..7) dolu bir dikdörtgen. origin (100, 50).
+    mask = np.zeros((10, 10), dtype=np.uint8)
+    mask[3:8, 2:6] = 1  # satır 3..7 (y), sütun 2..5 (x)
+    bmp = _make_supervisely_bitmap(mask, origin=(100, 50))
+    x1, y1, x2, y2 = supervisely_bitmap_to_xyxy(bmp)
+    assert (x1, y1) == (100 + 2, 50 + 3)  # origin + min
+    assert (x2, y2) == (100 + 5 + 1, 50 + 7 + 1)  # origin + max + 1 (yarı-açık)
+
+
+def test_supervisely_bitmap_to_xyxy_empty_mask():
+    import numpy as np
+
+    from electrack.data.convert import supervisely_bitmap_to_xyxy
+
+    bmp = _make_supervisely_bitmap(np.zeros((5, 5), dtype=np.uint8), origin=(0, 0))
+    assert supervisely_bitmap_to_xyxy(bmp) is None
+
+
 def test_xyxy_pixel_to_yolo():
     cx, cy, w, h = xyxy_pixel_to_yolo(0, 0, 100, 200, 1000, 1000)
     assert (cx, cy, w, h) == (0.05, 0.1, 0.1, 0.2)
