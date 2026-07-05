@@ -23,7 +23,12 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="electrack kamera demosu")
     ap.add_argument("--model", default=DEFAULT_MODEL)
     ap.add_argument("--source", default="0", help="kamera indeksi (0/1) veya video yolu")
-    ap.add_argument("--imgsz", type=int, default=640, help="çıkarım boyutu (eğitimle eşleştir)")
+    ap.add_argument(
+        "--imgsz",
+        type=int,
+        default=768,
+        help="çıkarım boyutu (model 768'de eğitildi; yoğun kartta minik SMD için 1280+ dene)",
+    )
     ap.add_argument(
         "--conf", type=float, default=0.35, help="tespit güven eşiği (0.35 kabul noktası)"
     )
